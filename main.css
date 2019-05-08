@@ -1,0 +1,47 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.container div {
+    border: black solid 1px;
+}
+
+.question-box {
+    margin: 0 auto;
+    background-color: lightblue;
+    color: white;
+    height: 200px;
+}
+
+#question-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.answer-button {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: solid black 1px;
+    width: 80%;
+}
+
+.submit-button {
+    margin: auto;
+    width: 80%;
+}
