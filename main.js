@@ -1,39 +1,81 @@
 const quiz = {
     numberCorrect: 0,
+    currentQuestionIndex: 0,
     questionsAndAnswers: [
-      {
-        question: "",
-        answer1: "",
-        answer2: "",
-        answer3: "",
-        answer4: ""
-      },
+      new Question("What was Luke Skywalker's original last name?", "Cloudrunner", "Starstrider", "Skywalker", "Starkiller"),
+      new Question("What is Luke's original home planet?", "Alderaan", "Kashyyyk", "Coruscant", "Tatooine")
     ]
   };
 
-  const question = {
-      question: "What is your name?",
-      answer1: "Tim",
-      answer2: "Jeff",
-      answer3: "Phillip",
-      correctAnswer: "Tyler"
+  function Question(question, answer1, answer2, answer3, correctAnswer){
+    this.question = question;
+    this.answer1 = answer1;
+    this.answer2 = answer2;
+    this.answer3 = answer3;
+    this.correctAnswer = correctAnswer;
   }
   
   function startQuiz() {
     //Begins the quiz when the user presses start
-    console.log("`startQuiz` ran");
     $(".start-button").click(function() {
         $(".begin-quiz-box").toggleClass("hidden");
         $(".question-box").toggleClass("hidden");
+        displayQuestionAndAnswers();
     });
   }
   
-  function displayQuestion() {
+  function displayQuestionBox() {
     //displays the question along with the 4 possible answers
-    console.log("`displayQuestion` ran");
+
     $(".question-box").on("submit", "#question-form", function(event) {
         event.preventDefault();
+        answer = $("input[name=radio-answer]:checked").val();
+        if(answer === quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer){
+            console.log("Correct");
+        }
+        else {
+            console.log("Not Correct");
+        }
     });
+  }
+
+  function displayQuestionAndAnswers() {
+    const questionOrder = Object.values(quiz.questionsAndAnswers[quiz.currentQuestionIndex]).splice(1, 4);
+    shuffle(questionOrder);
+    $(".question-box").append(`
+    <p class="question">${quiz.questionsAndAnswers[quiz.currentQuestionIndex].question}</p>
+            <form id="question-form">
+                <label for="answer-button">
+                    <input type="radio" name="radio-answer" value="${questionOrder[0]}">
+                    <span class="answer1">${questionOrder[0]}</span>
+                </label>
+                <label for="answer-button">
+                    <input type="radio" name="radio-answer" value="${questionOrder[1]}">
+                    <span class="answer2">${questionOrder[1]}</span>
+                </label>
+                <label for="answer-button">
+                    <input type="radio" name="radio-answer" value="${questionOrder[2]}">
+                    <span class="answer3">${questionOrder[2]}</span>
+                </label>
+                <label for="answer-button">
+                    <input type="radio" name="radio-answer" value="${questionOrder[3]}">
+                    <span class="answer4">${questionOrder[3]}</span>
+                </label>
+                <input type="submit" class="submit-button" value="Answer">
+            </form>`);
+  }
+
+  function swap(array, index) {
+      let temp = array[index];
+      const rand = Math.floor(Math.random() * array.length);
+      array[index] = array[rand];
+      array[rand] = temp;
+  }
+
+  function shuffle(array){
+      array.forEach(function(element, index) {
+        swap(array, index);
+      });
   }
   
   function determineAnswer() {
@@ -53,12 +95,10 @@ const quiz = {
   
   function handleQuestions() {
     startQuiz();
-    displayQuestion();
+    displayQuestionBox();
     determineAnswer();
     updateScore();
     displayResults();
-    arr = [question.answer1, question.answer2, question.answer3, question.correctAnswer];
-    console.log(arr[3] === question.answer1);
   }
   
   $(handleQuestions());
