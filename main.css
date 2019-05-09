@@ -16,7 +16,7 @@ body {
     display: none;
 }
 
-.container div {
+.container section {
     border: black solid 1px;
 }
 
