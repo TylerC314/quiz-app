@@ -10,6 +10,8 @@ function Quiz() {
     new Question("What is Darth Vader's real name?", "Mace Windu", "Qui-gon Jinn", "Sheev Palpatine", "Anakin Skywalker"),
     new Question("What type of spaceship did Luke Skywalker fly throughout the original trilogy?", "A-Wing", "Y-Wing", "Millenium Falcon", "X-Wing"),
   ];
+  this.questionOrder = this.questionsAndAnswers.slice();
+  shuffle(this.questionOrder);
 }
 
 function Question(question, answer1, answer2, answer3, correctAnswer) {
@@ -33,7 +35,7 @@ function submitAnswerListener() {
   $(".question-box").on("submit", "#question-form", function (event) {
     event.preventDefault();
     answer = $("input[name=radio-answer]:checked").val();
-    if (answer === currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].correctAnswer) {
+    if (answer === currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].correctAnswer) {
       $(".question-box").toggleClass("hidden");
       displayCorrectAnswer();
     }
@@ -51,30 +53,28 @@ function startQuiz() {
   $(".begin-quiz-box").toggleClass("hidden");
 }
 
-
-
 function displayQuestionAndAnswers() {
   $(".question-box").toggleClass("hidden");
-  const questionOrder = Object.values(currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex]).splice(1, 4);
-  shuffle(questionOrder);
+  const answerOrder = Object.values(currentQuiz.questionOrder[currentQuiz.currentQuestionIndex]).splice(1, 4);
+  shuffle(answerOrder);
   $(".question-box").append(`
-    <p class="question">${currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].question}</p>
+    <p class="question">${currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].question}</p>
             <form id="question-form">
                 <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${questionOrder[0]}">
-                    <span class="answer1">${questionOrder[0]}</span>
+                    <input type="radio" name="radio-answer" value="${answerOrder[0]}">
+                    <span class="answer1">${answerOrder[0]}</span>
                 </label>
                 <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${questionOrder[1]}">
-                    <span class="answer2">${questionOrder[1]}</span>
+                    <input type="radio" name="radio-answer" value="${answerOrder[1]}">
+                    <span class="answer2">${answerOrder[1]}</span>
                 </label>
                 <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${questionOrder[2]}">
-                    <span class="answer3">${questionOrder[2]}</span>
+                    <input type="radio" name="radio-answer" value="${answerOrder[2]}">
+                    <span class="answer3">${answerOrder[2]}</span>
                 </label>
                 <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${questionOrder[3]}">
-                    <span class="answer4">${questionOrder[3]}</span>
+                    <input type="radio" name="radio-answer" value="${answerOrder[3]}">
+                    <span class="answer4">${answerOrder[3]}</span>
                 </label>
                 <input type="submit" class="submit-button" value="Answer">
             </form>`);
@@ -95,19 +95,28 @@ function shuffle(array) {
 
 function displayCorrectAnswer() {
   //shows if the answer was correct
+  let buttonName = "";
+  if(currentQuiz.currentQuestionIndex + 1 === currentQuiz.questionOrder.length){
+    buttonName = "Finish Quiz!";
+  }
+  else{
+    buttonName = "NextQuestion";
+  }
   $(".determine-answer-box").toggleClass("hidden");
   $(".determine-answer-box").append(`
     <p>Correct!</p>
             <label for="next-question-button">
-                <button id="next-question-button">Next Question</button>
+                <button id="next-question-button">${buttonName}</button>
             </label>`);
+  updateScore(true);
   $("#next-question-button").click(function () {
     $(".determine-answer-box").html("");
     $(".determine-answer-box").toggleClass("hidden");
-    updateScore(true);
-    if (currentQuiz.currentQuestionIndex === currentQuiz.questionsAndAnswers.length) {
+    ++currentQuiz.currentQuestionIndex;
+    if (currentQuiz.currentQuestionIndex === currentQuiz.questionOrder.length) {
       displayResults();
     } else {
+      displayScore();
       displayQuestionAndAnswers();
     }
 
@@ -118,7 +127,7 @@ function displayIncorrectAnswer() {
   //shows if the answer was incorrect
   $(".determine-answer-box").toggleClass("hidden");
   $(".determine-answer-box").append(`
-    <p>Sorry the answer was ${currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].correctAnswer}!</p>
+    <p>Sorry the answer was ${currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].correctAnswer}!</p>
             <label for="next-question-button">
                 <button id="next-question-button">Next Question</button>
             </label>`);
@@ -126,7 +135,7 @@ function displayIncorrectAnswer() {
     $(".determine-answer-box").html("");
     $(".determine-answer-box").toggleClass("hidden");
     updateScore(false)
-    if (currentQuiz.currentQuestionIndex === currentQuiz.questionsAndAnswers.length) {
+    if (currentQuiz.currentQuestionIndex === currentQuiz.questionOrder.length) {
       displayResults();
     } else {
       displayQuestionAndAnswers();
@@ -135,18 +144,15 @@ function displayIncorrectAnswer() {
 }
 
 function displayScore() {
-  // $(".question-number").html(currentQuiz.currentQuestionIndex + 1);
-  // $(".questions-correct").html(currentQuiz.numberCorrect);
   $(".progress-box").html("");
   $(".progress-box").append(`
-    <p>Question Number ${currentQuiz.currentQuestionIndex + 1} / ${currentQuiz.questionsAndAnswers.length}</p>
-    <p>Number Correct: <span class="questions-correct">0</span></p>`);
+    <p>Question Number ${currentQuiz.currentQuestionIndex + 1} / ${currentQuiz.questionOrder.length}</p>
+    <p>Number Correct: ${currentQuiz.numberCorrect}`);
 }
 
 function updateScore(result) {
   if (result === true) {
-    currentQuiz.currentQuestionIndex++;
-    currentQuiz.numberCorrect++;
+    ++currentQuiz.numberCorrect;
     displayScore();
     $(".question-box").html("");
   } else {
@@ -158,9 +164,11 @@ function updateScore(result) {
 
 function displayResults() {
   //displays the final results of the quiz
+  $(".progress-box").toggleClass("hidden");
+  $(".score-screen").html("");
   $(".score-screen").toggleClass("hidden");
   $(".score-screen").append(`
-  <p>You got ${currentQuiz.numberCorrect} out of ${currentQuiz.questionsAndAnswers.length} correct!</p>
+  <p>You got ${currentQuiz.numberCorrect} out of ${currentQuiz.questionOrder.length} correct!</p>
   <button class="new-quiz-button">Play Again?</button>`);
   $(".new-quiz-button").click(function () {
     $(".score-screen").toggleClass("hidden");
@@ -172,6 +180,7 @@ function handleQuestions() {
   startQuiz();
   startQuizListener();
   submitAnswerListener();
+  console.log(currentQuiz.questionOrder[0].question);
 }
 
 $(handleQuestions());
