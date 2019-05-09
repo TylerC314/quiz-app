@@ -9,24 +9,26 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Star Wars Quiz</h1>
-        <div class="progress-box">
-            <p>Question Number <span class="question-number js-question-number">1</span> / 5</p>
-            <p>Number Correct: <span class="questions-correct js-questions-correct"></span></p>
-        </div>
-        <div class="begin-quiz-box">
+    <main class="container">
+        <header>
+            <h1>Star Wars Quiz</h1>
+        </header>
+        <section class="progress-box">
+            <p>Question Number <span class="question-number">1</span> / 5</p>
+            <p>Number Correct: <span class="questions-correct">0</span></p>
+        </section>
+        <section class="begin-quiz-box">
             <p>Press start to begin the quiz!</p>
             <button class="start-button">Start</button>
-        </div>
-        <div class="display-correct-answer js-display-correct-answer hidden">
-        </div>
-        <div class="question-box hidden">
-        </div>
-        <div class= "score-screen hidden">
-            <p>You got <span class="js-questions-correct">[score]</span> out of 5 correct!</p>
-        </div>
-    </div>
+        </section>
+        <section class="determine-answer-box hidden">
+        </section>
+        <section class="question-box hidden">
+        </section>
+        <section class= "score-screen hidden">
+            <p>You got <span class="questions-correct">[score]</span> out of 5 correct!</p>
+        </section>
+    </main>
     <script src="https://code.jquery.com/jquery-3.4.1.js"
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="main.js"></script>
