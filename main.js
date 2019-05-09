@@ -1,11 +1,16 @@
-const quiz = {
-  numberCorrect: 0,
-  currentQuestionIndex: 0,
-  questionsAndAnswers: [
+let currentQuiz = new Quiz();
+
+function Quiz() {
+  this.numberCorrect = 0;
+  this.currentQuestionIndex = 0;
+  this.questionsAndAnswers = [
     new Question("What was Luke Skywalker's original last name?", "Cloudrunner", "Starstrider", "Skywalker", "Starkiller"),
-    new Question("What is Luke's original home planet?", "Alderaan", "Kashyyyk", "Coruscant", "Tatooine")
-  ]
-};
+    new Question("What is Luke's original home planet?", "Alderaan", "Kashyyyk", "Coruscant", "Tatooine"),
+    new Question("Who is Han Solo's faithful companion?", "Jar Jar Binks", "Luke Skywalker", "Obi-Wan Kenobi", "Chewbacca"),
+    new Question("What is Darth Vader's real name?", "Mace Windu", "Qui-gon Jinn", "Sheev Palpatine", "Anakin Skywalker"),
+    new Question("What type of spaceship did Luke Skywalker fly throughout the original trilogy?", "A-Wing", "Y-Wing", "Millenium Falcon", "X-Wing"),
+  ];
+}
 
 function Question(question, answer1, answer2, answer3, correctAnswer) {
   this.question = question;
@@ -15,24 +20,22 @@ function Question(question, answer1, answer2, answer3, correctAnswer) {
   this.correctAnswer = correctAnswer;
 }
 
-function startQuiz() {
-  //Begins the quiz when the user presses start
+function startQuizListener() {
   $(".start-button").click(function () {
+    $(".progress-box").toggleClass("hidden");
     $(".begin-quiz-box").toggleClass("hidden");
     displayQuestionAndAnswers();
   });
 }
 
-function displayQuestionBox() {
+function submitAnswerListener() {
   //displays the question along with the 4 possible answers
   $(".question-box").on("submit", "#question-form", function (event) {
     event.preventDefault();
     answer = $("input[name=radio-answer]:checked").val();
-    if (answer === quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer) {
+    if (answer === currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].correctAnswer) {
       $(".question-box").toggleClass("hidden");
-
       displayCorrectAnswer();
-      
     }
     else {
       $(".question-box").toggleClass("hidden");
@@ -41,12 +44,21 @@ function displayQuestionBox() {
   });
 }
 
+function startQuiz() {
+  //Begins the quiz
+  currentQuiz = new Quiz();
+  displayScore();
+  $(".begin-quiz-box").toggleClass("hidden");
+}
+
+
+
 function displayQuestionAndAnswers() {
   $(".question-box").toggleClass("hidden");
-  const questionOrder = Object.values(quiz.questionsAndAnswers[quiz.currentQuestionIndex]).splice(1, 4);
+  const questionOrder = Object.values(currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex]).splice(1, 4);
   shuffle(questionOrder);
   $(".question-box").append(`
-    <p class="question">${quiz.questionsAndAnswers[quiz.currentQuestionIndex].question}</p>
+    <p class="question">${currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].question}</p>
             <form id="question-form">
                 <label for="answer-button">
                     <input type="radio" name="radio-answer" value="${questionOrder[0]}">
@@ -93,7 +105,12 @@ function displayCorrectAnswer() {
     $(".determine-answer-box").html("");
     $(".determine-answer-box").toggleClass("hidden");
     updateScore(true);
-    displayQuestionAndAnswers();
+    if (currentQuiz.currentQuestionIndex === currentQuiz.questionsAndAnswers.length) {
+      displayResults();
+    } else {
+      displayQuestionAndAnswers();
+    }
+
   });
 }
 
@@ -101,7 +118,7 @@ function displayIncorrectAnswer() {
   //shows if the answer was incorrect
   $(".determine-answer-box").toggleClass("hidden");
   $(".determine-answer-box").append(`
-    <p>Sorry the answer was ${quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer}!</p>
+    <p>Sorry the answer was ${currentQuiz.questionsAndAnswers[currentQuiz.currentQuestionIndex].correctAnswer}!</p>
             <label for="next-question-button">
                 <button id="next-question-button">Next Question</button>
             </label>`);
@@ -109,34 +126,52 @@ function displayIncorrectAnswer() {
     $(".determine-answer-box").html("");
     $(".determine-answer-box").toggleClass("hidden");
     updateScore(false)
-    displayQuestionAndAnswers();
+    if (currentQuiz.currentQuestionIndex === currentQuiz.questionsAndAnswers.length) {
+      displayResults();
+    } else {
+      displayQuestionAndAnswers();
+    }
   });
+}
+
+function displayScore() {
+  // $(".question-number").html(currentQuiz.currentQuestionIndex + 1);
+  // $(".questions-correct").html(currentQuiz.numberCorrect);
+  $(".progress-box").html("");
+  $(".progress-box").append(`
+    <p>Question Number ${currentQuiz.currentQuestionIndex + 1} / ${currentQuiz.questionsAndAnswers.length}</p>
+    <p>Number Correct: <span class="questions-correct">0</span></p>`);
 }
 
 function updateScore(result) {
   if (result === true) {
-    quiz.currentQuestionIndex++;
-    quiz.numberCorrect++;
-    $(".question-number").html(quiz.currentQuestionIndex + 1);
-    $(".questions-correct").html(quiz.numberCorrect);
+    currentQuiz.currentQuestionIndex++;
+    currentQuiz.numberCorrect++;
+    displayScore();
     $(".question-box").html("");
   } else {
-    quiz.currentQuestionIndex++;
-    $(".question-number").html(quiz.currentQuestionIndex + 1);
-    $(".questions-correct").html(quiz.numberCorrect);
+    currentQuiz.currentQuestionIndex++;
+    displayScore();
     $(".question-box").html("");
   }
 }
 
 function displayResults() {
   //displays the final results of the quiz
-  console.log("`displayResults` ran");
+  $(".score-screen").toggleClass("hidden");
+  $(".score-screen").append(`
+  <p>You got ${currentQuiz.numberCorrect} out of ${currentQuiz.questionsAndAnswers.length} correct!</p>
+  <button class="new-quiz-button">Play Again?</button>`);
+  $(".new-quiz-button").click(function () {
+    $(".score-screen").toggleClass("hidden");
+    startQuiz();
+  });
 }
 
 function handleQuestions() {
   startQuiz();
-  displayQuestionBox();
-  displayResults();
+  startQuizListener();
+  submitAnswerListener();
 }
 
 $(handleQuestions());
