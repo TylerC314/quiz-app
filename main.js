@@ -1,48 +1,51 @@
 const quiz = {
-    numberCorrect: 0,
-    currentQuestionIndex: 0,
-    questionsAndAnswers: [
-      new Question("What was Luke Skywalker's original last name?", "Cloudrunner", "Starstrider", "Skywalker", "Starkiller"),
-      new Question("What is Luke's original home planet?", "Alderaan", "Kashyyyk", "Coruscant", "Tatooine")
-    ]
-  };
+  numberCorrect: 0,
+  currentQuestionIndex: 0,
+  questionsAndAnswers: [
+    new Question("What was Luke Skywalker's original last name?", "Cloudrunner", "Starstrider", "Skywalker", "Starkiller"),
+    new Question("What is Luke's original home planet?", "Alderaan", "Kashyyyk", "Coruscant", "Tatooine")
+  ]
+};
 
-  function Question(question, answer1, answer2, answer3, correctAnswer){
-    this.question = question;
-    this.answer1 = answer1;
-    this.answer2 = answer2;
-    this.answer3 = answer3;
-    this.correctAnswer = correctAnswer;
-  }
-  
-  function startQuiz() {
-    //Begins the quiz when the user presses start
-    $(".start-button").click(function() {
-        $(".begin-quiz-box").toggleClass("hidden");
-        $(".question-box").toggleClass("hidden");
-        displayQuestionAndAnswers();
-    });
-  }
-  
-  function displayQuestionBox() {
-    //displays the question along with the 4 possible answers
+function Question(question, answer1, answer2, answer3, correctAnswer) {
+  this.question = question;
+  this.answer1 = answer1;
+  this.answer2 = answer2;
+  this.answer3 = answer3;
+  this.correctAnswer = correctAnswer;
+}
 
-    $(".question-box").on("submit", "#question-form", function(event) {
-        event.preventDefault();
-        answer = $("input[name=radio-answer]:checked").val();
-        if(answer === quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer){
-            console.log("Correct");
-        }
-        else {
-            console.log("Not Correct");
-        }
-    });
-  }
+function startQuiz() {
+  //Begins the quiz when the user presses start
+  $(".start-button").click(function () {
+    $(".begin-quiz-box").toggleClass("hidden");
+    displayQuestionAndAnswers();
+  });
+}
 
-  function displayQuestionAndAnswers() {
-    const questionOrder = Object.values(quiz.questionsAndAnswers[quiz.currentQuestionIndex]).splice(1, 4);
-    shuffle(questionOrder);
-    $(".question-box").append(`
+function displayQuestionBox() {
+  //displays the question along with the 4 possible answers
+  $(".question-box").on("submit", "#question-form", function (event) {
+    event.preventDefault();
+    answer = $("input[name=radio-answer]:checked").val();
+    if (answer === quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer) {
+      $(".question-box").toggleClass("hidden");
+
+      displayCorrectAnswer();
+      
+    }
+    else {
+      $(".question-box").toggleClass("hidden");
+      displayIncorrectAnswer();
+    }
+  });
+}
+
+function displayQuestionAndAnswers() {
+  $(".question-box").toggleClass("hidden");
+  const questionOrder = Object.values(quiz.questionsAndAnswers[quiz.currentQuestionIndex]).splice(1, 4);
+  shuffle(questionOrder);
+  $(".question-box").append(`
     <p class="question">${quiz.questionsAndAnswers[quiz.currentQuestionIndex].question}</p>
             <form id="question-form">
                 <label for="answer-button">
@@ -63,42 +66,77 @@ const quiz = {
                 </label>
                 <input type="submit" class="submit-button" value="Answer">
             </form>`);
-  }
+}
 
-  function swap(array, index) {
-      let temp = array[index];
-      const rand = Math.floor(Math.random() * array.length);
-      array[index] = array[rand];
-      array[rand] = temp;
-  }
+function swap(array, index) {
+  let temp = array[index];
+  const rand = Math.floor(Math.random() * array.length);
+  array[index] = array[rand];
+  array[rand] = temp;
+}
 
-  function shuffle(array){
-      array.forEach(function(element, index) {
-        swap(array, index);
-      });
+function shuffle(array) {
+  array.forEach(function (element, index) {
+    swap(array, index);
+  });
+}
+
+function displayCorrectAnswer() {
+  //shows if the answer was correct
+  $(".determine-answer-box").toggleClass("hidden");
+  $(".determine-answer-box").append(`
+    <p>Correct!</p>
+            <label for="next-question-button">
+                <button id="next-question-button">Next Question</button>
+            </label>`);
+  $("#next-question-button").click(function () {
+    $(".determine-answer-box").html("");
+    $(".determine-answer-box").toggleClass("hidden");
+    updateScore(true);
+    displayQuestionAndAnswers();
+  });
+}
+
+function displayIncorrectAnswer() {
+  //shows if the answer was incorrect
+  $(".determine-answer-box").toggleClass("hidden");
+  $(".determine-answer-box").append(`
+    <p>Sorry the answer was ${quiz.questionsAndAnswers[quiz.currentQuestionIndex].correctAnswer}!</p>
+            <label for="next-question-button">
+                <button id="next-question-button">Next Question</button>
+            </label>`);
+  $("#next-question-button").click(function () {
+    $(".determine-answer-box").html("");
+    $(".determine-answer-box").toggleClass("hidden");
+    updateScore(false)
+    displayQuestionAndAnswers();
+  });
+}
+
+function updateScore(result) {
+  if (result === true) {
+    quiz.currentQuestionIndex++;
+    quiz.numberCorrect++;
+    $(".question-number").html(quiz.currentQuestionIndex + 1);
+    $(".questions-correct").html(quiz.numberCorrect);
+    $(".question-box").html("");
+  } else {
+    quiz.currentQuestionIndex++;
+    $(".question-number").html(quiz.currentQuestionIndex + 1);
+    $(".questions-correct").html(quiz.numberCorrect);
+    $(".question-box").html("");
   }
-  
-  function determineAnswer() {
-    //shows if the previous answer was correct or not
-    console.log("`determineAnswer` ran");
-  }
-  
-  function updateScore() {
-    //updates the score of the quiz
-    console.log("`updateScore` ran");
-  }
-  
-  function displayResults() {
-    //displays the final results of the quiz
-    console.log("`displayResults` ran");
-  }
-  
-  function handleQuestions() {
-    startQuiz();
-    displayQuestionBox();
-    determineAnswer();
-    updateScore();
-    displayResults();
-  }
-  
-  $(handleQuestions());
+}
+
+function displayResults() {
+  //displays the final results of the quiz
+  console.log("`displayResults` ran");
+}
+
+function handleQuestions() {
+  startQuiz();
+  displayQuestionBox();
+  displayResults();
+}
+
+$(handleQuestions());
