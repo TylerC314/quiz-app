@@ -35,6 +35,7 @@ function submitAnswerListener() {
   $(".question-box").on("submit", "#question-form", function (event) {
     event.preventDefault();
     answer = $("input[name=radio-answer]:checked").val();
+    console.log(currentQuiz.currentQuestionIndex);
     if (answer === currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].correctAnswer) {
       $(".question-box").toggleClass("hidden");
       displayCorrectAnswer();
@@ -60,23 +61,24 @@ function displayQuestionAndAnswers() {
   $(".question-box").append(`
     <p class="question">${currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].question}</p>
             <form id="question-form">
-                <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${answerOrder[0]}">
+                <label for="answer1">
+                    <input type="radio" id="answer1" name="radio-answer" value="${answerOrder[0]}">
+                    <span class="radio-button"></span>
                     <span class="answer1">${answerOrder[0]}</span>
                 </label>
-                <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${answerOrder[1]}">
+                <label for="answer2">
+                    <input type="radio" id="answer2" name="radio-answer" value="${answerOrder[1]}">
                     <span class="answer2">${answerOrder[1]}</span>
                 </label>
-                <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${answerOrder[2]}">
+                <label for="answer3">
+                    <input type="radio" id="answer3" name="radio-answer" value="${answerOrder[2]}">
                     <span class="answer3">${answerOrder[2]}</span>
                 </label>
-                <label for="answer-button">
-                    <input type="radio" name="radio-answer" value="${answerOrder[3]}">
+                <label for="answer4">
+                    <input type="radio" id="answer4" name="radio-answer" value="${answerOrder[3]}">
                     <span class="answer4">${answerOrder[3]}</span>
                 </label>
-                <input type="submit" class="submit-button" value="Answer">
+                <input type="submit" class="submit-button" value="Choose">
             </form>`);
 }
 
@@ -119,25 +121,33 @@ function displayCorrectAnswer() {
       displayScore();
       displayQuestionAndAnswers();
     }
-
   });
 }
 
 function displayIncorrectAnswer() {
   //shows if the answer was incorrect
+  let buttonName = "";
+  if(currentQuiz.currentQuestionIndex + 1 >= currentQuiz.questionOrder.length){
+    buttonName = "Finish Quiz!";
+  }
+  else{
+    buttonName = "Next Question";
+  }
   $(".determine-answer-box").toggleClass("hidden");
   $(".determine-answer-box").append(`
     <p>Sorry the answer was ${currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].correctAnswer}!</p>
             <label for="next-question-button">
-                <button id="next-question-button">Next Question</button>
+                <button id="next-question-button">${buttonName}</button>
             </label>`);
+  updateScore(false);
   $("#next-question-button").click(function () {
     $(".determine-answer-box").html("");
     $(".determine-answer-box").toggleClass("hidden");
-    updateScore(false)
+    ++currentQuiz.currentQuestionIndex;
     if (currentQuiz.currentQuestionIndex === currentQuiz.questionOrder.length) {
       displayResults();
     } else {
+      displayScore();
       displayQuestionAndAnswers();
     }
   });
@@ -156,7 +166,6 @@ function updateScore(result) {
     displayScore();
     $(".question-box").html("");
   } else {
-    currentQuiz.currentQuestionIndex++;
     displayScore();
     $(".question-box").html("");
   }
