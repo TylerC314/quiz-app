@@ -22,7 +22,7 @@ function Question(question, answer1, answer2, answer3, correctAnswer) {
   this.correctAnswer = correctAnswer;
 }
 
-function startQuizListener() {
+function handleStartButton() {
   $(".start-button").click(function () {
     $(".progress-box").toggleClass("hidden");
     $(".begin-quiz-box").toggleClass("hidden");
@@ -30,8 +30,7 @@ function startQuizListener() {
   });
 }
 
-function submitAnswerListener() {
-  //displays the question along with the 4 possible answers
+function handleSubmitAnswer() {
   $(".question-box").on("submit", "#question-form", function (event) {
     event.preventDefault();
     answer = $("input[name=radio-answer]:checked").val();
@@ -47,6 +46,28 @@ function submitAnswerListener() {
   });
 }
 
+function handleRadioCheck() {
+  $(".question-box").on("click", "label", function(event) {
+    if($(this).is(":nth-child(1)")){
+      $("label").removeClass("blue-background green-background red-background yellow-background");
+      $(this).addClass("blue-background");
+    }
+    if($(this).is(":nth-child(2)")){
+      $("label").removeClass("blue-background green-background red-background yellow-background");
+      $(this).addClass("green-background");
+    }
+    if($(this).is(":nth-child(3)")){
+      $("label").removeClass("blue-background green-background red-background yellow-background");
+      $(this).addClass("red-background");
+    }
+    if($(this).is(":nth-child(4)")){
+      $("label").removeClass("blue-background green-background red-background yellow-background");
+      $(this).addClass("yellow-background");
+    }
+  });
+  
+}
+
 function startQuiz() {
   //Begins the quiz
   currentQuiz = new Quiz();
@@ -55,6 +76,7 @@ function startQuiz() {
 }
 
 function displayQuestionAndAnswers() {
+  //displays the question along with the 4 possible answers
   $(".question-box").toggleClass("hidden");
   const answerOrder = Object.values(currentQuiz.questionOrder[currentQuiz.currentQuestionIndex]).splice(1, 4);
   shuffle(answerOrder);
@@ -102,7 +124,7 @@ function displayCorrectAnswer() {
     buttonName = "Finish Quiz!";
   }
   else{
-    buttonName = "NextQuestion";
+    buttonName = "Next Question";
   }
   $(".determine-answer-box").toggleClass("hidden");
   $(".determine-answer-box").append(`
@@ -174,22 +196,22 @@ function updateScore(result) {
 function displayResults() {
   //displays the final results of the quiz
   $(".progress-box").toggleClass("hidden");
-  $(".score-screen").html("");
-  $(".score-screen").toggleClass("hidden");
-  $(".score-screen").append(`
+  $(".score-box").html("");
+  $(".score-box").toggleClass("hidden");
+  $(".score-box").append(`
   <p>You got ${currentQuiz.numberCorrect} out of ${currentQuiz.questionOrder.length} correct!</p>
   <button class="new-quiz-button">Play Again?</button>`);
   $(".new-quiz-button").click(function () {
-    $(".score-screen").toggleClass("hidden");
+    $(".score-box").toggleClass("hidden");
     startQuiz();
   });
 }
 
-function handleQuestions() {
+function handleQuizStart() {
   startQuiz();
-  startQuizListener();
-  submitAnswerListener();
-  console.log(currentQuiz.questionOrder[0].question);
+  handleStartButton();
+  handleSubmitAnswer();
+  handleRadioCheck();
 }
 
-$(handleQuestions());
+$(handleQuizStart());
