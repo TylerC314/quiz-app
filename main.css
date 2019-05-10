@@ -1,5 +1,7 @@
 * {
     box-sizing: border-box;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', Verdana, sans-serif;
+    font-size: 20px;
 }
 
 html {
@@ -14,6 +16,7 @@ html {
     max-width: 800px;
     text-align: center;
     color: white;
+    padding: 10px;
 }
 
 .hidden {
@@ -23,6 +26,7 @@ html {
 section {
     border: white 1px solid;
     padding: 20px;
+    margin-bottom: 10px;
 }
 
 .question-box {
@@ -40,11 +44,34 @@ section {
     margin-right: auto;
     margin-bottom: 15px;
     border: solid white 1px;
+    padding-top: 5%;
     width: 250px;
     height: 50px;
-    text-align: left;
-    padding-top: 5%;
-    padding-left: 20%;
+    text-align: center;
+}
+
+.container input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.blue-background {
+    background-color: rgba(6, 31, 252, 0.7);
+}
+
+.green-background {
+    background-color: rgba(27, 252, 6, 0.7);
+}
+
+.red-background {
+    background-color: rgba(252, 6, 6, 0.7);
+}
+
+.yellow-background {
+    background-color: rgba(251, 255, 0, 0.7);
 }
 
 button, .submit-button{
@@ -54,11 +81,14 @@ button, .submit-button{
     width: 250px;
     height: 50px;
     margin: auto;
+    background-color: white;
+    color: black;
 }
 
-.submit-button:hover {
-    background: white;
-    color: black;
+button:hover, .submit-button:hover {
+    /* background-color: rgb(1, 131, 170, .7); */
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 #question-form label:nth-child(1):hover{
@@ -79,8 +109,7 @@ button, .submit-button{
 
 @media screen and (min-width: 768px){
     #question-form label {
-        padding-left: 10%;
-        padding-top: 2%;
+        padding-top: 1.5%;
     }
 }
 
