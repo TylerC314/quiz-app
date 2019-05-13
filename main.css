@@ -29,7 +29,7 @@ section {
     margin-bottom: 10px;
 }
 
-button:hover, label:hover{
+button:hover, input:hover, label:hover{
     cursor: pointer;
 }
 
