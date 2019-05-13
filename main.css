@@ -29,6 +29,10 @@ section {
     margin-bottom: 10px;
 }
 
+button:hover, label:hover{
+    cursor: pointer;
+}
+
 .question-box {
     margin: 0 auto;
 }
