@@ -84,7 +84,7 @@ function displayQuestionAndAnswers() {
     <p class="question">${currentQuiz.questionOrder[currentQuiz.currentQuestionIndex].question}</p>
             <form id="question-form">
                 <label for="answer1">
-                    <input type="radio" id="answer1" name="radio-answer" value="${answerOrder[0]}">
+                    <input type="radio" id="answer1" name="radio-answer" value="${answerOrder[0]}" required>
                     <span class="radio-button"></span>
                     <span class="answer1">${answerOrder[0]}</span>
                 </label>
